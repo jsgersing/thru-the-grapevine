@@ -73,8 +73,3 @@ async def update_grape_buyer(profile_id: str, update_data: GrapeBuyerUpdate):
 async def update_grape_seller(profile_id: str, update_data: GrapeSellerUpdate):
     data = update_data.dict(exclude_none=True)
     return {"result": API.db.update("GrapeSellers", {"profile_id": profile_id}, data)}
-
-
-@API.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}

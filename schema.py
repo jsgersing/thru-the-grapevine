@@ -9,7 +9,7 @@ class GrapeBuyer(BaseModel):
     email = EmailStr
     state = constr(max_length=255)
     grapes_seeking = List[constr(max_length=255)]
-    volume_seeking = int
+    volume_seeking = List[int]
 
     class Config:
         extra = Extra.forbid
@@ -20,7 +20,7 @@ class GrapeBuyerUpdate(BaseModel):
     email = Optional[EmailStr]
     state = Optional[constr(max_length=255)]
     grapes_seeking = Optional[List[constr(max_length=255)]]
-    volume_seeking = int
+    volume_seeking = List[int]
 
     class Config:
         extra = Extra.forbid
@@ -32,6 +32,7 @@ class GrapeSeller(BaseModel):
     email = EmailStr
     state = constr(max_length=255)
     grapes_selling = List[constr(max_length=255)]
+    volume_selling = List[int]
 
     class Config:
         extra = Extra.forbid
@@ -42,6 +43,7 @@ class GrapeSellerUpdate(BaseModel):
     email = Optional[EmailStr]
     state = Optional[constr(max_length=255)]
     grapes_selling = Optional[List[constr(max_length=255)]]
+    volume_selling = List[int]
 
     class Config:
         extra = Extra.forbid

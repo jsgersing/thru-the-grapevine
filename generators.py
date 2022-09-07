@@ -31,5 +31,3 @@ class RandomGrapeSeller(Printable):
         self.state = state_selling
         self.grape_selling = grape_selling
         self.volume_selling = tons_selling
-
-
