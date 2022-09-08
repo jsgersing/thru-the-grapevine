@@ -7,6 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.graphs import stacked_bar_chart, df_grapes_by_side
 from app.data import MongoDB
+from app.model import BuyerSellerMatcher
 from app.schema import GrapeBuyer, GrapeSeller, GrapeBuyerUpdate, GrapeSellerUpdate
 
 API = FastAPI(
@@ -16,6 +17,7 @@ API = FastAPI(
 )
 
 API.db = MongoDB()
+API.matcher = BuyerSellerMatcher()
 API.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -39,12 +41,12 @@ async def collections():
 
 
 @API.post("/read/grape-buyer")
-async def read_grape_buyer(data: Optional[Dict] = None):
+async def read_grape_buyer(data: Optional[Dict]):
     return {"result": API.db.read("GrapeBuyers", data)}
 
 
 @API.post("/read/grape-seller")
-async def read_grape_seller(data: Optional[Dict] = None):
+async def read_grape_seller(data: Optional[Dict]):
     return {"result": API.db.read("GrapeSellers", data)}
 
 
@@ -74,6 +76,11 @@ async def update_grape_buyer(profile_id: str, update_data: GrapeBuyerUpdate):
 async def update_grape_seller(profile_id: str, update_data: GrapeSellerUpdate):
     data = update_data.dict(exclude_none=True)
     return {"result": API.db.update("GrapeSellers", {"profile_id": profile_id}, data)}
+
+
+@API.post("/match/{profile_id}")
+async def match(profile_id: str, n_matches: int):
+    return {"result": API.matcher(n_matches, profile_id)}
 
 
 @API.get("/graph/df-grapes-by-side")
