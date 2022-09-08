@@ -1,5 +1,5 @@
-from generators import RandomGrapeBuyer, RandomGrapeSeller
-from schema import GrapeBuyer, GrapeSeller
+from data_generators.generators import RandomGrapeBuyer, RandomGrapeSeller
+from app.schema import GrapeBuyer, GrapeSeller
 
 
 def validate_grape_buyer():
@@ -7,7 +7,7 @@ def validate_grape_buyer():
 
 
 def validate_grape_seller():
-    assert all(GrapeSeller(**vars(RandomGrapeSeller)) for _ in range(1000))
+    assert all(GrapeSeller(**vars(RandomGrapeSeller())) for _ in range(1000))
 
 
 def validate_schemas():
