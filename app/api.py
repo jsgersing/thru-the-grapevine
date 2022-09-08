@@ -5,13 +5,13 @@ from fastapi import FastAPI, HTTPException
 from pymongo.errors import DuplicateKeyError
 from starlette.middleware.cors import CORSMiddleware
 
-from app.graphs import stacked_bar_chart, df_grapes_by_side, grouped_by_chart
+from app.graphs import stacked_bar_chart, df_grapes_by_side
 from app.data import MongoDB
 from app.schema import GrapeBuyer, GrapeSeller, GrapeBuyerUpdate, GrapeSellerUpdate
 
 API = FastAPI(
     title='Thru the Grapevine API',
-    version="0.1.1",
+    version="0.1.2",
     docs_url='/'
 )
 
@@ -80,9 +80,9 @@ async def update_grape_seller(profile_id: str, update_data: GrapeSellerUpdate):
 async def grapes_by_side():
     """ Tech Stack Count by Role - stacked bar chart
     Returns an Altair Chart in JSON format """
-    return grouped_by_chart(
+    return stacked_bar_chart(
         df_grapes_by_side(API.db),
-        "grapes",
+        "tons",
         "side",
-        "volume"
+        "variety"
     ).to_dict()
