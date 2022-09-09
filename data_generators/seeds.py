@@ -29,7 +29,7 @@ class SeedMongo:
 
     def __call__(self, fresh: bool):
         self.grape_buyers(fresh, 100)
-        self.grape_sellers(fresh, 20)
+        self.grape_sellers(fresh, 50)
 
 
 if __name__ == '__main__':

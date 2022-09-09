@@ -29,10 +29,10 @@ API.add_middleware(
 
 @API.get("/version")
 async def version():
-    local = os.getenv("CONTEXT") == 'local'
-    remote = "Run the API locally with the proper environment variables"
-    password = API.db.first("Secret")["Password"] if local else remote
-    return {"result": {"Version": API.version, "Password": password}}
+    # local = os.getenv("CONTEXT") == 'local'
+    # remote = "Run the API locally with the proper environment variables"
+    # password = API.db.first("Secret")["Password"] if local else remote
+    return {"result": {"Version": API.version}}
 
 
 @API.get("/collections")

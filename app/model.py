@@ -12,7 +12,7 @@ class BuyerSellerMatcher:
     def __call__(self, n_matches: int, profile_id: str) -> List[str]:
         """ Return a list of profile_id for matched sellers """
         buyer_id = profile_id
-        print(buyer_id)
+
         grape_buyers = DataFrame(self.db.projection("GrapeBuyers", {}, {
                 "_id": False,
                 "profile_id": True,
