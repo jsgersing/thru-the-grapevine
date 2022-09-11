@@ -1,11 +1,11 @@
-import os
 from typing import Optional, Dict
 
 from fastapi import FastAPI, HTTPException
 from pymongo.errors import DuplicateKeyError
 from starlette.middleware.cors import CORSMiddleware
 
-from app.graphs import stacked_bar_chart, df_grapes_by_side
+from app.graphs import stacked_bar_chart, df_grapes_by_side, df_grapes_by_state_buyer, df_grapes_by_state_seller, \
+    grouped_bar_chart, df_tons_by_state_combined
 from app.data import MongoDB
 from app.model import BuyerSellerMatcher
 from app.schema import GrapeBuyer, GrapeSeller, GrapeBuyerUpdate, GrapeSellerUpdate
@@ -85,11 +85,48 @@ async def match(profile_id: str, n_matches: int):
 
 @API.get("/graph/df-grapes-by-side")
 async def grapes_by_side():
-    """ Tech Stack Count by Role - stacked bar chart
+    """ Variety Volume by Side - stacked bar chart
     Returns an Altair Chart in JSON format """
     return stacked_bar_chart(
         df_grapes_by_side(API.db),
         "tons",
         "side",
         "variety"
+    ).to_dict()
+
+
+@API.get("/graph/df-grapes-by-state-buyer")
+async def grapes_by_state_buyer():
+    """ Variety Volume by State for Buyers - stacked bar chart
+    Returns an Altair Chart in JSON format """
+    return stacked_bar_chart(
+        df_grapes_by_state_buyer(API.db),
+        "tons",
+        "state",
+        "variety"
+    ).to_dict()
+
+
+@API.get("/graph/df-grapes-by-state-seller")
+async def grapes_by_state_seller():
+    """ Variety Volume by State for Sellers - stacked bar chart
+    Returns an Altair Chart in JSON format """
+    return stacked_bar_chart(
+        df_grapes_by_state_seller(API.db),
+        "tons",
+        "state",
+        "variety"
+    ).to_dict()
+
+
+@API.get("/graph/df-grapes-by-state-combined")
+async def tons_by_state_combined():
+    """ Variety Volume by Side by State - Grouped bar chart
+    Returns an Altair Chart in JSON format """
+    return grouped_bar_chart(
+        df_tons_by_state_combined(API.db),
+        "tons",
+        "side",
+        "variety",
+        "state"
     ).to_dict()
