@@ -5,7 +5,7 @@ from pymongo.errors import DuplicateKeyError
 from starlette.middleware.cors import CORSMiddleware
 
 from app.graphs import stacked_bar_chart, df_grapes_by_side, df_grapes_by_state_buyer, df_grapes_by_state_seller, \
-    grouped_bar_chart, df_tons_by_state_combined
+    grouped_bar_chart, df_tons_by_state_combined, donut_chart, df_tons_by_variety_buyer, df_tons_by_variety_seller
 from app.data import MongoDB
 from app.model import BuyerSellerMatcher
 from app.schema import GrapeBuyer, GrapeSeller, GrapeBuyerUpdate, GrapeSellerUpdate
@@ -129,4 +129,26 @@ async def tons_by_state_combined():
         "side",
         "variety",
         "state"
+    ).to_dict()
+
+
+@API.get("/graph/df-tons-by-variety-buyer")
+async def tons_by_variety_buyer():
+    """ Variety Volume for Buyer - Donut Chart
+    Returns an Altair Chart in JSON format """
+    return donut_chart(
+        df_tons_by_variety_buyer(API.db),
+        "variety",
+        "tons"
+    ).to_dict()
+
+
+@API.get("/graph/df-tons-by-variety-seller")
+async def tons_by_variety_seller():
+    """ Variety Volume for Seller - Donut Chart
+    Returns an Altair Chart in JSON format """
+    return donut_chart(
+        df_tons_by_variety_seller(API.db),
+        "variety",
+        "tons"
     ).to_dict()

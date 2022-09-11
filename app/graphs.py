@@ -49,18 +49,42 @@ def grouped_bar_chart(df: DataFrame, column_1: str, column_2: str, column_3: str
 
 
 def grouped_by_chart(df: DataFrame, column_1: str, column_2: str, column_3: str) -> Chart:
-    return Chart(df).mark_bar().encode(
+    return Chart(
+        df,
+        title=f"{title_fix(column_1)} per {title_fix(column_3)} by {title_fix(column_2)}",
+    ).mark_bar().encode(
         x=column_2,
         y=column_3,
         color=column_2,
         column=column_1
+    ).properties(
+        width=480,
+        height=400,
+        padding=24,
+    ).configure(
+        legend={"padding": 24},
+        title={"fontSize": 20, "offset": 24},
+        view={"stroke": "#FFF"},
     )
 
 
-def donut_chart():
-    source = DataFrame({"category": [1, 2, 3, 4, 5, 6], "value": [4, 6, 10, 3, 7, 8]})
-    return Chart(source).mark_arc(innerRadius=50).encode(
-        theta=Theta(field="value", type="quantitative"), color=Color(field="category", type="nominal"))
+def donut_chart(df: DataFrame, column_1: str, column_2: str):
+    return Chart(
+        df,
+        title=f"{title_fix(column_2)} per {title_fix(column_1)}",
+    ).mark_arc(innerRadius=50).encode(
+        theta=Theta(field=column_2, type="quantitative"),
+        color=Color(field=column_1, type="nominal"),
+        tooltip=Tooltip([column_2, column_1]),
+    ).properties(
+        width=480,
+        height=400,
+        padding=24,
+    ).configure(
+        legend={"padding": 24},
+        title={"fontSize": 20, "offset": 24},
+        view={"stroke": "#FFF"},
+    )
 
 
 def df_grapes_by_side(database: MongoDB) -> DataFrame:
@@ -109,3 +133,23 @@ def df_tons_by_state_combined(database: MongoDB) -> DataFrame:
     grape_sellers = df_grapes_by_state_seller(database)
     return concat([grape_buyers, grape_sellers])
 
+
+def df_tons_by_variety_buyer(database: MongoDB) -> DataFrame:
+    grape_buyers = DataFrame(database.projection("GrapeBuyers", {}, {"grapes_seeking": True, "volume_seeking": True}))
+    grape_buyers = grape_buyers.explode(column=["grapes_seeking", "volume_seeking"])
+    grape_buyers.rename(columns={"grapes_seeking": "variety", "volume_seeking": "tons"}, inplace=True)
+    grape_buyers["side"] = "Buyer"
+    grape_buyers["tons"] = Series([int(num) for num in grape_buyers["tons"]])
+    grape_buyers = grape_buyers.groupby("variety").agg({"tons": "sum"}).reset_index()
+    print(grape_buyers)
+    return grape_buyers
+
+
+def df_tons_by_variety_seller(database: MongoDB) -> DataFrame:
+    grape_sellers = DataFrame(database.projection("GrapeSellers", {}, {"grapes_selling": True, "volume_selling": True}))
+    grape_sellers = grape_sellers.explode(column=["grapes_selling", "volume_selling"])
+    grape_sellers.rename(columns={"grapes_selling": "variety", "volume_selling": "tons"}, inplace=True)
+    grape_sellers["side"] = "Seller"
+    grape_sellers["tons"] = Series([int(num) for num in grape_sellers["tons"]])
+    grape_sellers = grape_sellers.groupby("variety").agg({"tons": "sum"}).reset_index()
+    return grape_sellers
