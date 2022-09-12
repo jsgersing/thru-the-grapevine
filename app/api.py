@@ -9,6 +9,7 @@ from app.graphs import stacked_bar_chart, df_grapes_by_side, df_grapes_by_state_
 from app.data import MongoDB
 from app.model import BuyerSellerMatcher
 from app.schema import GrapeBuyer, GrapeSeller, GrapeBuyerUpdate, GrapeSellerUpdate
+from app.routers import record_router, graph_router, model_router, collection_router
 
 API = FastAPI(
     title='Thru the Grapevine API',
@@ -27,12 +28,16 @@ API.add_middleware(
 )
 
 
-@API.get("/version")
+@API.get("/version", tags=["General Operations"])
 async def version():
     # local = os.getenv("CONTEXT") == 'local'
     # remote = "Run the API locally with the proper environment variables"
     # password = API.db.first("Secret")["Password"] if local else remote
     return {"result": {"Version": API.version}}
+
+
+for router in (record_router, collection_router, graph_router, model_router):
+    API.include_router(router.Router)
 
 
 @API.get("/collections")
@@ -83,7 +88,7 @@ async def match(profile_id: str, n_matches: int):
     return {"result": API.matcher(n_matches, profile_id)}
 
 
-@API.get("/graph/df-grapes-by-side")
+@API.get("/df-grapes-by-side")
 async def grapes_by_side():
     """ Variety Volume by Side - stacked bar chart
     Returns an Altair Chart in JSON format """
@@ -95,7 +100,7 @@ async def grapes_by_side():
     ).to_dict()
 
 
-@API.get("/graph/df-grapes-by-state-buyer")
+@API.get("/df-grapes-by-state-buyer")
 async def grapes_by_state_buyer():
     """ Variety Volume by State for Buyers - stacked bar chart
     Returns an Altair Chart in JSON format """
@@ -107,7 +112,7 @@ async def grapes_by_state_buyer():
     ).to_dict()
 
 
-@API.get("/graph/df-grapes-by-state-seller")
+@API.get("/df-grapes-by-state-seller")
 async def grapes_by_state_seller():
     """ Variety Volume by State for Sellers - stacked bar chart
     Returns an Altair Chart in JSON format """
@@ -119,7 +124,7 @@ async def grapes_by_state_seller():
     ).to_dict()
 
 
-@API.get("/graph/df-grapes-by-state-combined")
+@API.get("/df-grapes-by-state-combined")
 async def tons_by_state_combined():
     """ Variety Volume by Side by State - Grouped bar chart
     Returns an Altair Chart in JSON format """
@@ -132,7 +137,7 @@ async def tons_by_state_combined():
     ).to_dict()
 
 
-@API.get("/graph/df-tons-by-variety-buyer")
+@API.get("/df-tons-by-variety-buyer")
 async def tons_by_variety_buyer():
     """ Variety Volume for Buyer - Donut Chart
     Returns an Altair Chart in JSON format """
@@ -143,7 +148,7 @@ async def tons_by_variety_buyer():
     ).to_dict()
 
 
-@API.get("/graph/df-tons-by-variety-seller")
+@API.get("/df-tons-by-variety-seller")
 async def tons_by_variety_seller():
     """ Variety Volume for Seller - Donut Chart
     Returns an Altair Chart in JSON format """
