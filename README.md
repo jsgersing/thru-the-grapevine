@@ -1,5 +1,6 @@
 # ThruTheGrapevine
-A personal project inspired by my Underdog Devs Labs experience
+A personal project inspired by my Underdog Devs Labs experience.
+And a special thanks to [Robert Sharp](https://github.com/BrokenShell) for his invaluable guidance. 
 
 
 # Key Features
