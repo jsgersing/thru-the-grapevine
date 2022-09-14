@@ -1,5 +1,3 @@
-from typing import List
-
 from pandas import DataFrame, Series, merge
 
 from app.data import MongoDB
@@ -9,7 +7,7 @@ class BuyerSellerMatcher:
     """ Callable matching class implementing sorted search algorithm """
     db = MongoDB()
 
-    def __call__(self, n_matches: int, profile_id: str) -> List[str]:
+    def __call__(self, n_matches: int, profile_id: str) -> set[str]:
         """ Return a list of profile_id for matched sellers """
         buyer_id = profile_id
 
@@ -18,6 +16,7 @@ class BuyerSellerMatcher:
                 "profile_id": True,
                 "grapes_seeking": True,
                 "volume_seeking": True,
+                "state": True
             })
         )
         grape_buyers = grape_buyers.explode(column=["grapes_seeking", "volume_seeking"])
@@ -30,6 +29,7 @@ class BuyerSellerMatcher:
                 "profile_id": True,
                 "grapes_selling": True,
                 "volume_selling": True,
+                "state": True
             })
         )
 
@@ -39,9 +39,16 @@ class BuyerSellerMatcher:
         grape_sellers["tons"] = Series([int(num) for num in grape_sellers["tons"]])
 
         together = merge(grape_buyers, grape_sellers, how='inner', on=['variety'])
-        together = together.loc[(together.tons_x <= together.tons_y)]
+        # together = together.loc[(together.tons_x <= together.tons_y)]
         together["tons_difference"] = together["tons_y"] - together["tons_x"]
 
         buyer_indexes = (together[together["profile_id_x"] == buyer_id]).index.to_list()
-        seller_profile_id = [together.iloc[num]["profile_id_y"] for num in buyer_indexes]
-        return seller_profile_id[:n_matches]
+        seller_profile_id = [
+            (together.iloc[num]["tons_difference"],
+             together.iloc[num]['state_x'] != together.iloc[num]['state_y'],
+             together.iloc[num]["profile_id_y"]) for num in buyer_indexes]
+        seller_profile_id.sort()
+        seller_profile_id = [tup[2] for tup in seller_profile_id]
+        return set(seller_profile_id[:n_matches])
+
+

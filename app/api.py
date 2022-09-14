@@ -5,7 +5,7 @@ from app.routers import record_router, graph_router, model_router, collection_ro
 
 API = FastAPI(
     title='Thru the Grapevine API',
-    version="0.1.2",
+    version="0.1.3",
     docs_url='/'
 )
 
