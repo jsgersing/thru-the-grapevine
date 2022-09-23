@@ -3,7 +3,13 @@ from typing import List, Optional, Any
 from pydantic import BaseModel, constr, EmailStr, Extra
 
 
-class GrapeBuyer(BaseModel):
+class ExtraForbid(BaseModel):
+    class Config:
+        extra = Extra.forbid
+        arbitrary_types_allowed = True
+
+
+class GrapeBuyer(ExtraForbid):
     profile_id: constr(max_length=255)
     first_name: constr(max_length=255)
     last_name: constr(max_length=255)
@@ -13,12 +19,8 @@ class GrapeBuyer(BaseModel):
     grapes_seeking: List[constr(max_length=255)]
     volume_seeking: List[Any]
 
-    class Config:
-        extra = Extra.forbid
-        arbitrary_types_allowed = True
 
-
-class GrapeBuyerUpdate(BaseModel):
+class GrapeBuyerUpdate(ExtraForbid):
     first_name: constr(max_length=255)
     last_name: constr(max_length=255)
     winery: Optional[constr(max_length=255)]
@@ -27,12 +29,8 @@ class GrapeBuyerUpdate(BaseModel):
     grapes_seeking: Optional[List[constr(max_length=255)]]
     volume_seeking: List[Any]
 
-    class Config:
-        extra = Extra.forbid
-        arbitrary_types_allowed = True
 
-
-class GrapeSeller(BaseModel):
+class GrapeSeller(ExtraForbid):
     profile_id: constr(max_length=255)
     first_name: constr(max_length=255)
     last_name: constr(max_length=255)
@@ -42,12 +40,8 @@ class GrapeSeller(BaseModel):
     grapes_selling: List[constr(max_length=255)]
     volume_selling: List[Any]
 
-    class Config:
-        extra = Extra.forbid
-        arbitrary_types_allowed = True
 
-
-class GrapeSellerUpdate(BaseModel):
+class GrapeSellerUpdate(ExtraForbid):
     first_name: constr(max_length=255)
     last_name: constr(max_length=255)
     vineyard: Optional[constr(max_length=255)]
@@ -56,6 +50,3 @@ class GrapeSellerUpdate(BaseModel):
     grapes_selling: Optional[List[constr(max_length=255)]]
     volume_selling: List[Any]
 
-    class Config:
-        extra = Extra.forbid
-        arbitrary_types_allowed = True
